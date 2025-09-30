@@ -1,37 +1,44 @@
-'use client';
+"use client";
+import { useEffect, useState } from "react";
 
-import { useState, useEffect } from "react";
+type TimerProps = {
+    timeLeft: number;
+    onExpire: () => void;
+    onTick: (newTime: number) => void;
+};
 
-export default function Timer({ onExpire }: { onExpire: () => void }) {
-    const [time, setTime] = useState(120);
-
+export default function Timer({ timeLeft, onExpire, onTick }: TimerProps) {
     useEffect(() => {
-        if (time <= 0) {
+        if (timeLeft <= 0) {
             onExpire();
             return;
         }
         const id = setInterval(() => {
-            setTime((prev) => prev - 1);
+            onTick(timeLeft - 1);
         }, 1000);
         return () => clearInterval(id);
-    }, [time, onExpire]);
+    }, [timeLeft, onExpire, onTick]);
 
-    const mm = String(Math.floor(time / 60)).padStart(2, "0");
-    const ss = String(time % 60).padStart(2, "0");
-    const isNearEnd = time <= 30 && time > 0;
+    const mm = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+    const ss = String(timeLeft % 60).padStart(2, "0");
+    const isTimerLow = timeLeft <= 30 && timeLeft > 0;
+    const isExpired = timeLeft <= 0;
+
+    const timeClasses = `font-mono text-4xl font-extrabold tracking-wider transition-all duration-500
+        ${isExpired ? 'text-red-400' :
+        isTimerLow ? 'text-red-400 animate-pulse' :
+            'text-[#FFC107]'}`;
 
     return (
-        <header className="sticky top-0 z-30 bg-emerald-800">
-            <div className="py-2 text-center font-bold text-white">
-                Успейте открыть пробную неделю —{" "}
-                <span
-                    className={`px-3 py-1 rounded font-mono ${
-                        isNearEnd ? "text-red-500 animate-pulse" : ""
-                    }`}
-                >
-          {mm}:{ss}
-        </span>
+        <div className="w-full bg-[#1A382A] text-center py-4 flex flex-col items-center justify-center relative rounded-b-xl border-b border-[#2E3D44]">
+            <span className="text-white text-sm font-semibold mb-2">Успейте открыть пробную неделю</span>
+            <div className={`flex items-center space-x-1 ${isExpired ? 'text-white' : 'text-white'}`}>
+                <span className={timeClasses}>+</span>
+                <span className={timeClasses}>
+                    {mm} : {ss}
+                </span>
+                <span className={timeClasses}>+</span>
             </div>
-        </header>
+        </div>
     );
 }

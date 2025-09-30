@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+    source: '/api/plans',
+    destination: '/_api/',
 };
 
 export default nextConfig;

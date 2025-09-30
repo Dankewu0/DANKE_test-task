@@ -1,13 +1,13 @@
 "use client";
-type Plan = {
+export type Plan = {
     id: string;
     title: string;
     price: number;
     oldPrice?: number;
     discountPercent?: number;
     description?: string;
+    isBest?: boolean;
 };
-
 export default function TariffCard({
                                        plan,
                                        selected,
@@ -19,40 +19,55 @@ export default function TariffCard({
     onSelect: (id: string) => void;
     isExpired: boolean;
 }) {
+    const isBestVisible = plan.isBest && !isExpired;
+
+    const displayPrice = isExpired ? (plan.oldPrice ?? plan.price) : plan.price;
+    const displayOldPrice = isExpired ? undefined : plan.oldPrice;
+
     return (
         <div
             onClick={() => onSelect(plan.id)}
-            className={`cursor-pointer rounded-2xl p-4 transition ${
-                selected
-                    ? "border-2 border-yellow-400 bg-gray-800"
-                    : "border border-gray-700 bg-gray-900"
-            }`}
+            className={`relative cursor-pointer rounded-2xl p-4 bg-[#1E2A32] border transition-all duration-300 text-white flex flex-col justify-start min-h-[220px]
+                ${isBestVisible
+                ? (selected ? "border-[#FFC107] col-span-2 order-first" : "border-[#2E3D44] col-span-2 order-first")
+                : (selected ? "border-[#FFC107] col-span-1" : "border-[#2E3D44] col-span-1 hover:border-[#FFC107]/50")}
+                shadow-lg`}
         >
-            <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">{plan.title}</h3>
-                {!isExpired && plan.discountPercent && (
-                    <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">
-            -{plan.discountPercent}%
-          </span>
-                )}
-            </div>
+            {isBestVisible && (
+                <div className="absolute top-0 right-0 bg-[#FFC107] text-black text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl">
+                    ХИТ!
+                </div>
+            )}
 
-            <div className="mt-4">
-                {!isExpired ? (
-                    <div className="flex items-baseline gap-3">
-                        <span className="text-2xl font-bold text-white">{plan.price} ₽</span>
-                        {plan.oldPrice && (
-                            <span className="line-through text-gray-400">{plan.oldPrice} ₽</span>
-                        )}
+            <div className="flex flex-col">
+                {plan.discountPercent && !isExpired && (
+                    <div className={`absolute top-0 left-0 bg-[#D43F4F] text-white text-xs font-semibold px-2 py-0.5 rounded-br-lg rounded-tl-xl
+                        ${isBestVisible ? 'mt-0' : 'mt-0'} `}>
+                        -{plan.discountPercent}%
                     </div>
-                ) : (
-                    <span className="text-2xl font-bold text-white">
-            {plan.oldPrice ?? plan.price} ₽
-          </span>
                 )}
-                {plan.description && (
-                    <p className="mt-2 text-sm text-gray-300">{plan.description}</p>
-                )}
+
+                <h3 className={`font-bold mb-1 ${isBestVisible ? 'text-xl mt-4' : 'text-lg mt-4'}`}>{plan.title}</h3>
+
+                <div className="flex flex-col mt-2">
+                    <div className={`font-extrabold text-white transition-colors duration-500 ${isBestVisible ? 'text-5xl' : 'text-3xl'}`}>
+                        <span className="flex items-baseline space-x-2">
+                            <span className={`${isBestVisible ? 'text-[#FFC107]' : 'text-white'}`}>{displayPrice} ₽</span>
+                        </span>
+                    </div>
+                    {displayOldPrice && (
+                        <span className={`text-base text-gray-500 line-through transition-opacity duration-500 mt-[-5px] ${isBestVisible ? 'text-lg' : 'text-sm'}`}>
+                            {displayOldPrice} ₽
+                        </span>
+                    )}
+
+                    {plan.description && (
+                        <p className={`text-sm text-gray-400 mt-2 p-1 transition-all duration-300 
+                            ${selected ? 'rounded' : 'border-transparent'}`}>
+                            {plan.description}
+                        </p>
+                    )}
+                </div>
             </div>
         </div>
     );
