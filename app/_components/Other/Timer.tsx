@@ -1,5 +1,4 @@
-"use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 type TimerProps = {
     timeLeft: number;
@@ -25,13 +24,13 @@ export default function Timer({ timeLeft, onExpire, onTick }: TimerProps) {
     const isExpired = timeLeft <= 0;
 
     const timeClasses = `font-mono text-4xl font-extrabold tracking-wider transition-all duration-500
-        ${isExpired ? 'text-red-400' :
+        ${isExpired ? 'text-gray-400' :
         isTimerLow ? 'text-red-400 animate-pulse' :
-            'text-[#FFC107]'}`;
+            'text-[#FDB056]'}`;
 
     return (
-        <div className="w-full bg-[#1A382A] text-center py-4 flex flex-col items-center justify-center relative rounded-b-xl border-b border-[#2E3D44]">
-            <span className="text-white text-sm font-semibold mb-2">Успейте открыть пробную неделю</span>
+        <div className="w-full bg-[#1D5B43] text-center py-4 flex flex-col items-center justify-center relative rounded-b-xl border-b border-[#2E3D44]">
+            <span className="text-white text-l font-semibold mb-2">Успейте открыть пробную неделю</span>
             <div className={`flex items-center space-x-1 ${isExpired ? 'text-white' : 'text-white'}`}>
                 <span className={timeClasses}>+</span>
                 <span className={timeClasses}>

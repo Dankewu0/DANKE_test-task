@@ -1,12 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import TariffList, { Plan } from "@/app/_components/Cards/TariffList";
-import { mockTariffs } from "@/app/_data/mockData";
-import Image from "next/image";
 import Timer from "@/app/_components/Other/Timer";
+import { mockTariffs } from "@/app/_data/mockData";
 
-const TIMER_DURATION_SECONDS = 120;
-const LOW_TIME_THRESHOLD_SECONDS = 30;
+const TIMER_DURATION_SECONDS: number = 120;
+const LOW_TIME_THRESHOLD_SECONDS: number = 30;
 
 type RawTariff = {
     id: string;
@@ -17,65 +16,52 @@ type RawTariff = {
     text: string;
 };
 
-const formatMockPlans = (tariffs: RawTariff[]): Plan[] => {
+const formatPlans = (tariffs: RawTariff[]): Plan[] => {
     return tariffs.map(t => ({
         id: t.id,
         title: t.period,
         price: t.price,
         oldPrice: t.full_price,
-        discountPercent: Math.round(((t.full_price - t.price) / t.full_price) * 100),
+        discountPercent: t.full_price > t.price ? Math.round(((t.full_price - t.price) / t.full_price) * 100) : undefined,
         description: t.text,
         isBest: t.is_best,
-    }));
+    })).sort((a, b) => {
+        if (a.isBest) return -1;
+        if (b.isBest) return 1;
+        return a.price - b.price;
+    });
 };
 
 export default function Page() {
-    const [plans, setPlans] = useState<Plan[]>(formatMockPlans(mockTariffs));
-    const [expired, setExpired] = useState(false);
+    const [plans, setPlans] = useState<Plan[]>([]);
+    const [expired, setExpired] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [timeLeft, setTimeLeft] = useState(TIMER_DURATION_SECONDS);
+    const [timeLeft, setTimeLeft] = useState<number>(TIMER_DURATION_SECONDS);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const isTimerLow = timeLeft <= LOW_TIME_THRESHOLD_SECONDS && timeLeft > 0;
 
     useEffect(() => {
-        const fetchPlans = async () => {
-            try {
-                const res = await fetch("/api/plans", {
-                    cache: "no-store",
-                });
-
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-
-                const data: RawTariff[] = await res.json();
-
-                if (!Array.isArray(data)) {
-                    throw new Error("Invalid data format from API");
-                }
-
-                if (data.length > 0) {
-                    setPlans(formatMockPlans(data));
-                } else {
-                    setError("API вернул пустой список тарифов. Отображаются моковые данные.");
-                }
-
-            } catch (err) {
-                setError("Не удалось загрузить тарифы с API. Отображаются моковые данные.");
-            }
-        };
+        try {
+            const rawTariffs: RawTariff[] = mockTariffs;
+            setPlans(formatPlans(rawTariffs));
+        } catch (e: unknown) {
+            setError("Ошибка при обработке данных.");
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    const handleTimerExpire = () => {
+    const handleTimerExpire = (): void => {
         setExpired(true);
     };
 
-    const handleTimerTick = (newTime: number) => {
+    const handleTimerTick = (newTime: number): void => {
         setTimeLeft(newTime);
     };
 
     return (
-        <div className="min-h-screen bg-[#172128] flex flex-col items-center py-0 text-white font-sans">
+        <div className="min-h-screen bg-[#232829] flex flex-col items-center py-0 text-white font-sans">
             <div className="sticky top-0 z-10 w-full shadow-2xl">
                 <Timer
                     onExpire={handleTimerExpire}
@@ -84,48 +70,51 @@ export default function Page() {
                 />
             </div>
 
-            <h1 className="text-3xl font-bold mt-8 mb-8 text-white">
-                Выбери подходящий для себя <span className="text-[#FFC107]">тариф</span>
-            </h1>
+            <main className="max-w-7xl w-full px-4 pt-12 pb-12">
+                <h1 className="text-3xl sm:text-4xl font-bold text-white text-center mb-8">
+                    Выбери подходящий для себя <span className="text-[#FDB056]">тариф</span>
+                </h1>
 
-            <div className="flex flex-col lg:flex-row items-start justify-center max-w-7xl mx-auto gap-8 px-4">
-                <div className="flex-shrink-0 flex items-center justify-center lg:justify-start lg:w-1/3">
-                    <Image
-                        src="/placeholder_man.png"
-                        alt="Спортивный мужчина"
-                        width={300}
-                        height={600}
-                        priority
-                        className="object-contain h-[550px]"
-                    />
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-center mx-auto gap-8">
+
+                    <div className="flex-shrink-0 flex items-center justify-center lg:justify-start lg:w-[400px]">
+                        <img
+                            src="https://placehold.co/300x600/1A1D20/white?text=Спортивный+мужчина"
+                            alt="Спортивный мужчина"
+                            className="object-contain h-[550px] w-full max-w-xs lg:max-w-none rounded-xl"
+                        />
+                    </div>
+
+                    <div className="flex-grow lg:w-auto max-w-sm w-full mx-auto lg:mx-0">
+                        {loading && <div className="text-center p-8 bg-[#282E33] rounded-xl">Загрузка тарифов...</div>}
+                        {error && (
+                            <div className="text-red-500 p-4 bg-red-900 border border-red-500 rounded mb-4 text-center">
+                                {error}
+                            </div>
+                        )}
+                        {!loading && !error && plans.length > 0 && (
+                            <TariffList
+                                initialPlans={plans}
+                                isExpired={expired}
+                                isTimerLow={isTimerLow}
+                            />
+                        )}
+                    </div>
                 </div>
 
-                <div className="flex-grow lg:w-2/3 max-w-lg">
-                    {error && (
-                        <div className="text-red-500 p-4 bg-red-900 border border-red-500 rounded mb-4 text-center">
-                            {error}
-                        </div>
-                    )}
-                    <TariffList
-                        initialPlans={plans}
-                        isExpired={expired}
-                        isTimerLow={isTimerLow}
-                    />
-                </div>
-            </div>
-
-            <div
-                className="mt-12 mb-8 bg-[#172128] p-6 rounded-2xl max-w-3xl text-center shadow-lg border border-[#172128]">
                 <div
-                    className="inline-block px-4 py-2 mb-4 text-lg font-bold text-[#3EE179] border border-[#3EE179] rounded-full">
-                    гарантия возврата 30 дней
+                    className="mt-12 mb-8 p-6 rounded-2xl max-w-3xl mx-auto text-center shadow-lg border border-[#383E44]">
+                    <div
+                        className="inline-block px-4 py-2 mb-4 text-lg font-bold text-[#3EE179] border border-[#3EE179] rounded-xl">
+                        Гарантия возврата 30 дней
+                    </div>
+                    <p className="text-base text-gray-400">
+                        Мы уверены, что наш план сработает для тебя и ты увидишь видимые результаты уже через 4 недели! Мы
+                        даже готовы полностью вернуть твои деньги в течение 30 дней с момента покупки, если ты не получишь
+                        видимых результатов.
+                    </p>
                 </div>
-                <p className="text-base text-gray-300">
-                    Мы уверены, что наш план сработает для тебя и ты увидишь видимые результаты уже через 4 недели! Мы
-                    даже готовы полностью вернуть твои деньги в течение 30 дней с момента покупки, если ты не получишь
-                    видимых результатов.
-                </p>
-            </div>
+            </main>
         </div>
     );
 }
