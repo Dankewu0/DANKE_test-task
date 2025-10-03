@@ -60,6 +60,8 @@ export default function Page() {
         setTimeLeft(newTime);
     };
 
+    const isBestPlanAvailable = plans.length > 0 && plans[0].isBest;
+
     return (
         <div className="min-h-screen bg-[#232829] flex flex-col items-center py-0 text-white font-sans">
             <div className="sticky top-0 z-10 w-full shadow-2xl">
@@ -71,21 +73,25 @@ export default function Page() {
             </div>
 
             <main className="max-w-7xl w-full px-4 pt-12 pb-12">
-                <h1 className="text-3xl sm:text-4xl font-bold text-white text-center mb-8">
+                <h1 className="text-3xl sm:text-4xl font-bold text-white text-center mb-10">
                     Выбери подходящий для себя <span className="text-[#FDB056]">тариф</span>
                 </h1>
 
-                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-center mx-auto gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-5 items-start justify-center mx-auto gap-8">
 
-                    <div className="flex-shrink-0 flex items-center justify-center lg:justify-start lg:w-[400px]">
+                    <div className="lg:col-span-2 w-full flex justify-center lg:justify-end">
                         <img
-                            src="https://placehold.co/300x600/1A1D20/white?text=Спортивный+мужчина"
+                            src="https://placehold.co/400x600/1A1D20/white?text=Спортивный+мужчина"
                             alt="Спортивный мужчина"
-                            className="object-contain h-[550px] w-full max-w-xs lg:max-w-none rounded-xl"
+                            className={`
+                                w-full max-w-xs lg:max-w-none object-cover rounded-xl transition-all duration-300 shadow-xl 
+                                h-[550px]
+                             
+                            `}
                         />
                     </div>
 
-                    <div className="flex-grow lg:w-auto max-w-sm w-full mx-auto lg:mx-0">
+                    <div className="lg:col-span-3 w-full">
                         {loading && <div className="text-center p-8 bg-[#282E33] rounded-xl">Загрузка тарифов...</div>}
                         {error && (
                             <div className="text-red-500 p-4 bg-red-900 border border-red-500 rounded mb-4 text-center">
@@ -103,7 +109,7 @@ export default function Page() {
                 </div>
 
                 <div
-                    className="mt-12 mb-8 p-6 rounded-2xl max-w-3xl mx-auto text-center shadow-lg border border-[#383E44]">
+                    className="mt-12 mb-8 p-6 rounded-2xl w-full mx-auto text-center shadow-lg border border-[#383E44] bg-[#282E33]">
                     <div
                         className="inline-block px-4 py-2 mb-4 text-lg font-bold text-[#3EE179] border border-[#3EE179] rounded-xl">
                         Гарантия возврата 30 дней

@@ -29,11 +29,11 @@ function FeaturedTariffCard({
     return (
         <div
             onClick={() => onSelect(plan.id)}
-            className={`relative cursor-pointer rounded-2xl p-6 bg-[#282E33] text-white shadow-xl transition-all duration-300
+            className={`relative cursor-pointer rounded-2xl px-15 py-6 bg-[#282E33] text-white shadow-xl transition-all duration-300
                 ${selected ? "border border-[#FDB056] transform scale-[1.01]" : "border border-[#383E44] hover:border-[#FDB056]/50"}`}
         >
             {!isExpired && (
-                <div className="absolute top-0 right-0 bg-[#FDB056] text-black text-sm font-bold px-4 py-1 rounded-bl-lg rounded-tr-xl">
+                <div className="absolute top-0 right-0  text-[#FDB056] text-sm font-bold px-4 py-1 rounded-bl-lg rounded-tr-xl">
                     ХИТ!
                 </div>
             )}
@@ -44,10 +44,9 @@ function FeaturedTariffCard({
                 </div>
             )}
 
-            <div className="flex flex-col sm:flex-row items-start justify-between w-full pt-2">
+            <div className="flex flex-col w-full pt-2">
                 <div className="flex flex-col items-start">
                     <h3 className="font-bold text-xl">{plan.title}</h3>
-
                     <div className="flex flex-col items-start mt-2">
                         <div className="flex items-baseline gap-2">
                             <span className="text-5xl font-bold text-[#FDB056]">{displayPrice} ₽</span>
@@ -59,7 +58,7 @@ function FeaturedTariffCard({
                 </div>
 
                 {plan.description && (
-                    <p className="mt-2 text-sm text-gray-400 text-left max-w-[150px] pt-1">
+                    <p className="mt-4 text-sm text-gray-400 text-left pt-1 w-full">
                         {plan.description}
                     </p>
                 )}
