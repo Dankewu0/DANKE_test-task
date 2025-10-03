@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import TariffList, { Plan } from "@/app/_components/Cards/TariffList";
 import Timer from "@/app/_components/Other/Timer";
 import { mockTariffs } from "@/app/_data/mockData";
+import Image from "next/image";
 
-const TIMER_DURATION_SECONDS: number = 120;
+const TIMER_DURATION_SECONDS: number = 180;
 const LOW_TIME_THRESHOLD_SECONDS: number = 30;
 
 type RawTariff = {
@@ -16,6 +17,8 @@ type RawTariff = {
     text: string;
 };
 
+const PERIOD_ORDER: string[] = ["Навсегда", "3 месяца", "1 месяц", "1 неделя"];
+
 const formatPlans = (tariffs: RawTariff[]): Plan[] => {
     return tariffs.map(t => ({
         id: t.id,
@@ -26,11 +29,22 @@ const formatPlans = (tariffs: RawTariff[]): Plan[] => {
         description: t.text,
         isBest: t.is_best,
     })).sort((a, b) => {
-        if (a.isBest) return -1;
-        if (b.isBest) return 1;
-        return a.price - b.price;
+        if (a.isBest && !b.isBest) return -1;
+        if (!a.isBest && b.isBest) return 1;
+
+        const aIndex = PERIOD_ORDER.indexOf(a.title);
+        const bIndex = PERIOD_ORDER.indexOf(b.title);
+
+        if (aIndex === -1) return 1;
+        if (bIndex === -1) return -1;
+
+        return aIndex - bIndex;
     });
 };
+
+const IMAGE_WIDTH = 381;
+const IMAGE_HEIGHT = 767;
+const IMAGE_OFFSET_WIDTH = IMAGE_WIDTH + 32;
 
 export default function Page() {
     const [plans, setPlans] = useState<Plan[]>([]);
@@ -73,24 +87,34 @@ export default function Page() {
             </div>
 
             <main className="max-w-7xl w-full px-4 pt-12 pb-12">
-                <h1 className="text-3xl sm:text-4xl font-bold text-white text-center mb-10">
-                    Выбери подходящий для себя <span className="text-[#FDB056]">тариф</span>
-                </h1>
-
+                <div className="grid grid-cols-1 lg:grid-cols-5 items-start mx-auto gap-8 mb-4">
+                    <div className="lg:col-span-2 w-full hidden lg:flex justify-end">
+                        <div
+                            className="w-full text-left"
+                            style={{ maxWidth: `${IMAGE_OFFSET_WIDTH}px` }}
+                        >
+                            <h1 className="text-3xl sm:text-4xl font-bold text-white whitespace-nowrap">
+                                Выбери подходящий для себя <span className="text-[#FDB056]">тариф</span>
+                            </h1>
+                        </div>
+                    </div>
+                    <div className="lg:col-span-3 w-full" />
+                </div>
                 <div className="grid grid-cols-1 lg:grid-cols-5 items-start justify-center mx-auto gap-8">
-
                     <div className="lg:col-span-2 w-full flex justify-center lg:justify-end">
-                        <img
-                            src="https://placehold.co/400x600/1A1D20/white?text=Спортивный+мужчина"
+                        <Image
+                            src="/freepik-export-20240531103402atHS.png"
                             alt="Спортивный мужчина"
+                            width={IMAGE_WIDTH}
+                            height={IMAGE_HEIGHT}
                             className={`
-                                w-full max-w-xs lg:max-w-none object-cover rounded-xl transition-all duration-300 shadow-xl 
-                                h-[550px]
-                             
+                                object-cover transition-all duration-300
+                                w-[381px] 
+                                h-[767px]
+                                lg:mr-8 
                             `}
                         />
                     </div>
-
                     <div className="lg:col-span-3 w-full">
                         {loading && <div className="text-center p-8 bg-[#282E33] rounded-xl">Загрузка тарифов...</div>}
                         {error && (
@@ -107,18 +131,22 @@ export default function Page() {
                         )}
                     </div>
                 </div>
-
-                <div
-                    className="mt-12 mb-8 p-6 rounded-2xl w-full mx-auto text-center shadow-lg border border-[#383E44] bg-[#282E33]">
-                    <div
-                        className="inline-block px-4 py-2 mb-4 text-lg font-bold text-[#3EE179] border border-[#3EE179] rounded-xl">
-                        Гарантия возврата 30 дней
+                <div className="grid grid-cols-1 lg:grid-cols-5 items-start mx-auto gap-8 mt-12 w-full">
+                    <div className="lg:col-span-5 w-full bg-[#282E33] rounded-2xl shadow-lg border border-[#383E44]">
+                        <div className="grid grid-cols-1 lg:grid-cols-5 items-start mx-auto gap-8 py-6 w-full">
+                            <div className="lg:col-span-4 w-full px-4 sm:px-4">
+                                <div
+                                    className="inline-block px-4 py-2 mb-4 text-lg font-bold text-[#3EE179] border border-[#3EE179] rounded-xl">
+                                    Гарантия возврата 30 дней
+                                </div>
+                                <p className="text-base text-gray-400">
+                                    Мы уверены, что наш план сработает для тебя и ты увидишь видимые результаты уже через 4 недели! Мы
+                                    даже готовы полностью вернуть твои деньги в течение 30 дней с момента покупки, если ты не получишь
+                                    видимых результатов.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <p className="text-base text-gray-400">
-                        Мы уверены, что наш план сработает для тебя и ты увидишь видимые результаты уже через 4 недели! Мы
-                        даже готовы полностью вернуть твои деньги в течение 30 дней с момента покупки, если ты не получишь
-                        видимых результатов.
-                    </p>
                 </div>
             </main>
         </div>

@@ -30,8 +30,8 @@ export default function Timer({ timeLeft, onExpire, onTick }: TimerProps) {
 
     return (
         <div className="w-full bg-[#1D5B43] text-center py-4 flex flex-col items-center justify-center relative rounded-b-xl border-b border-[#2E3D44]">
-            <span className="text-white text-l font-semibold mb-2">Успейте открыть пробную неделю</span>
-            <div className={`flex items-center space-x-1 ${isExpired ? 'text-white' : 'text-white'}`}>
+            <span className="text-white text-xl font-semibold mb-2">Успейте открыть пробную неделю</span>
+            <div className={`flex items-center space-x-1 text-lg ${isExpired ? 'text-white' : 'text-white'}`}>
                 <span className={timeClasses}>+</span>
                 <span className={timeClasses}>
                     {mm} : {ss}

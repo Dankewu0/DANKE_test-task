@@ -16,7 +16,7 @@ function FeaturedTariffCard({
                                 selected,
                                 onSelect,
                                 isExpired,
-                            }: FeaturedCardProps) {
+                            }: FeaturedCardProps): React.ReactElement {
     const displayPrice = isExpired ? (plan.oldPrice ?? plan.price) : plan.price;
     const displayOldPrice = isExpired ? undefined : plan.oldPrice;
 
@@ -25,43 +25,47 @@ function FeaturedTariffCard({
         : undefined);
 
     const displayedDiscount = isExpired ? undefined : discount;
+    const needsTopSpacing = displayedDiscount !== undefined || (plan.isBest && !isExpired);
+    const priceColor = selected ? "text-[#FDB056]" : "text-white";
 
     return (
         <div
             onClick={() => onSelect(plan.id)}
-            className={`relative cursor-pointer rounded-2xl px-15 py-6 bg-[#282E33] text-white shadow-xl transition-all duration-300
-                ${selected ? "border border-[#FDB056] transform scale-[1.01]" : "border border-[#383E44] hover:border-[#FDB056]/50"}`}
+            className={`relative cursor-pointer rounded-3xl px-6 py-6 bg-[#282E33] text-white shadow-xl transition-all duration-300
+                ${selected ? "border-2 border-[#FDB056] transform scale-[1.01]" : "border border-[#383E44] hover:border-[#FDB056]/50"}`}
         >
-            {!isExpired && (
-                <div className="absolute top-0 right-0  text-[#FDB056] text-sm font-bold px-4 py-1 rounded-bl-lg rounded-tr-xl">
+            {plan.isBest && !isExpired && (
+                <div className="absolute top-0 right-0 text-[#FDB056] text-xs font-bold px-2 py-0.5 rounded-b-sm mr-4 mt-4">
                     ХИТ!
                 </div>
             )}
-
             {displayedDiscount && (
-                <div className={`absolute top-0 left-0 bg-[#D43F4F] text-white text-sm font-semibold px-3 py-1 rounded-br-lg rounded-tl-xl`}>
+                <div className={`absolute top-0 left-0 bg-[#D43F4F] text-white text-xs font-semibold px-2 py-0.5 rounded-b-sm ml-12 `}>
                     -{displayedDiscount}%
                 </div>
             )}
 
-            <div className="flex flex-col w-full pt-2">
-                <div className="flex flex-col items-start">
-                    <h3 className="font-bold text-xl">{plan.title}</h3>
-                    <div className="flex flex-col items-start mt-2">
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-5xl font-bold text-[#FDB056]">{displayPrice} ₽</span>
+            <div className="flex flex-col w-full"
+                 style={{ paddingTop: needsTopSpacing ? '2rem' : '0.5rem' }}
+            >
+                <div className="flex items-center justify-center w-full">
+                    <div className="flex flex-col items-start ml-36">
+                        <h3 className="font-bold text-2xl mb-2">{plan.title}</h3>
+                        <div className="flex flex-col items-start">
+                            <span className={`text-5xl font-bold ${priceColor}`}>{displayPrice} ₽</span>
                             {displayOldPrice && (
-                                <span className="line-through text-gray-500 text-lg mt-3">{displayOldPrice} ₽</span>
+                                <span className="line-through text-gray-500 text-lg mt-[-5px] ml-[2px]">{displayOldPrice} ₽</span>
                             )}
                         </div>
                     </div>
+                    <div className="flex flex-col items-start pl-4">
+                        {plan.description && (
+                            <p className="text-base text-gray-300 text-left">
+                                {plan.description}
+                            </p>
+                        )}
+                    </div>
                 </div>
-
-                {plan.description && (
-                    <p className="mt-4 text-sm text-gray-400 text-left pt-1 w-full">
-                        {plan.description}
-                    </p>
-                )}
             </div>
         </div>
     );
@@ -73,13 +77,13 @@ type TariffListProps = {
     isTimerLow: boolean;
 };
 
-export default function TariffList({ initialPlans, isExpired, isTimerLow }: TariffListProps) {
+export default function TariffList({ initialPlans, isExpired, isTimerLow }: TariffListProps): React.ReactElement {
     const [plans, setPlans] = useState<Plan[]>(initialPlans);
     const [selected, setSelected] = useState<string | null>(
         initialPlans.find((p) => p.isBest)?.id ?? initialPlans[0]?.id ?? null
     );
-    const [checkboxChecked, setCheckboxChecked] = useState(false);
-    const [checkboxError, setCheckboxError] = useState(false);
+    const [checkboxChecked, setCheckboxChecked] = useState<boolean>(false);
+    const [checkboxError, setCheckboxError] = useState<boolean>(false);
 
     useEffect(() => {
         const bestId = initialPlans.find((p) => p.isBest)?.id;
@@ -111,7 +115,7 @@ export default function TariffList({ initialPlans, isExpired, isTimerLow }: Tari
         }
     }, [initialPlans, isExpired, selected]);
 
-    const handleBuy = () => {
+    const handleBuy = (): void => {
         if (!checkboxChecked) {
             setCheckboxError(true);
             return;
@@ -119,7 +123,7 @@ export default function TariffList({ initialPlans, isExpired, isTimerLow }: Tari
         console.log(`Покупка тарифа: ${selected}`);
     };
 
-    const buttonClasses = useMemo(() => {
+    const buttonClasses = useMemo((): string => {
         let classes = "w-full mt-6 bg-[#FDB056] text-black font-extrabold py-3 rounded-xl transition-all duration-300 transform active:scale-[0.99] shadow-lg";
 
         if (!selected) {
@@ -132,12 +136,14 @@ export default function TariffList({ initialPlans, isExpired, isTimerLow }: Tari
         return classes;
     }, [selected, isTimerLow, isExpired]);
 
-    let bestPlan = plans.find(p => p.isBest);
-    let standardPlans = plans.filter(p => !bestPlan || p.id !== bestPlan.id).sort((a, b) => (a.price - b.price));
+    let bestPlan = plans.find((p): boolean => !!p.isBest);
+    let standardPlans = plans
+        .filter((p): boolean => !bestPlan || p.id !== bestPlan.id);
 
     if (isExpired && plans.length > 0) {
-        bestPlan = plans[0];
-        standardPlans = plans.slice(1);
+        const initialBestId = initialPlans.find(ip => ip.isBest)?.id;
+        bestPlan = plans.find(p => p.id === initialBestId) || plans[0];
+        standardPlans = plans.filter(p => p.id !== bestPlan!.id);
     }
 
     if (!bestPlan && plans.length > 0) {
@@ -184,7 +190,8 @@ export default function TariffList({ initialPlans, isExpired, isTimerLow }: Tari
                     </div>
                 )}
 
-                <div className="grid gap-4 grid-cols-3">
+                {/* ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлен grid-cols-1 для мобильных устройств */}
+                <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
                     {standardPlans.map((plan) => (
                         <TariffCard
                             key={plan.id}
@@ -195,7 +202,6 @@ export default function TariffList({ initialPlans, isExpired, isTimerLow }: Tari
                         />
                     ))}
                 </div>
-
                 <div className="mt-6 flex items-start p-4 mx-0 bg-[#282E33] rounded-xl border border-[#383E44]">
                     <span className="text-xl text-[#FDB056] mr-3 font-bold">!</span>
                     <div className="ml-0 text-sm text-gray-300 text-left">
@@ -205,30 +211,45 @@ export default function TariffList({ initialPlans, isExpired, isTimerLow }: Tari
                         </p>
                     </div>
                 </div>
-
                 <div className="flex items-start mt-4 px-4">
                     <input
                         type="checkbox"
                         checked={checkboxChecked}
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setCheckboxChecked(e.target.checked);
                             setCheckboxError(false);
                         }}
-                        className={`form-checkbox h-4 w-4 mt-1 bg-[#1E2A32] border-[#2E3D44] text-[#FDB056] rounded transition-all duration-300 ${checkboxError ? 'border-red-500 ring-2 ring-red-500' : 'focus:ring-[#FDB056]'}`}
+                        className={`
+                            form-checkbox h-4 w-4 mt-1 appearance-none 
+                            border-2 border-gray-500 
+                            checked:bg-transparent checked:border-gray-500 
+                            checked:text-[#FDB056] 
+                            focus:ring-0 focus:ring-offset-0 transition-all duration-100 ease-in-out
+                            ${checkboxError ? 'border-red-500' : ''}
+                        `}
+                        style={{
+                            backgroundImage: checkboxChecked
+                                ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%23FDB056' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")`
+                                : 'none',
+                            backgroundSize: '100% 100%',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundColor: 'transparent',
+                        }}
                     />
-                    <label className={`ml-2 text-sm text-left leading-tight ${checkboxError ? 'text-red-500' : 'text-gray-400'}`}>
-                        Я согласен с <span className="text-white font-bold cursor-pointer hover:text-[#FDB056]/80">офертой рекуррентных платежей</span> и <span className="text-white font-bold cursor-pointer hover:text-[#FDB056]/80">Политикой конфиденциальности</span>
+                    <label className={`ml-2 text-sm text-left leading-tight 
+                                       ${checkboxError ? 'text-red-500' : 'text-gray-500'} 
+                                       transition-colors duration-200`}>
+                        Я согласен с <span className="text-gray-500 cursor-pointer hover:underline">офертой рекуррентных платежей</span> и <span className="text-gray-500 cursor-pointer hover:underline">Политикой конфиденциальности</span>
                     </label>
                 </div>
-
                 <button
                     onClick={handleBuy}
-                    disabled={!selected}
+                    disabled={!selected || !checkboxChecked}
                     className={buttonClasses}
                 >
                     Купить
                 </button>
-
                 <p className="text-xs text-gray-500 mt-3 text-center px-4 pb-4">
                     Нажимая кнопку «Купить», Пользователь соглашается на разовое списание денежных средств для получения
                     пожизненного доступа к приложению. Пользователь соглашается, что данные кредитной/дебетовой карты
