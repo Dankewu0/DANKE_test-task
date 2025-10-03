@@ -29,12 +29,10 @@ const formatPlans = (tariffs: RawTariff[]): Plan[] => {
         description: t.text,
         isBest: t.is_best,
     })).sort((a, b) => {
-        if (a.isBest && !b.isBest) return -1;
-        if (!a.isBest && b.isBest) return 1;
-
         const aIndex = PERIOD_ORDER.indexOf(a.title);
         const bIndex = PERIOD_ORDER.indexOf(b.title);
 
+        if (aIndex === -1 && bIndex === -1) return 0;
         if (aIndex === -1) return 1;
         if (bIndex === -1) return -1;
 
@@ -102,18 +100,26 @@ export default function Page() {
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-5 items-start justify-center mx-auto gap-8">
                     <div className="lg:col-span-2 w-full flex justify-center lg:justify-end">
-                        <Image
-                            src="/freepik-export-20240531103402atHS.png"
-                            alt="Спортивный мужчина"
-                            width={IMAGE_WIDTH}
-                            height={IMAGE_HEIGHT}
-                            className={`
-                                object-cover transition-all duration-300
-                                w-[381px] 
-                                h-[767px]
-                                lg:mr-8 
-                            `}
-                        />
+                        <div className="relative">
+                            <Image
+                                src="/freepik-export-20240531103402atHS.png"
+                                alt="Спортивный мужчина"
+                                width={IMAGE_WIDTH}
+                                height={IMAGE_HEIGHT}
+                                className={`
+                                    object-cover transition-all duration-300
+                                    w-[381px] 
+                                    h-[767px]
+                                    lg:mr-8 
+                                `}
+                            />
+                            <div
+                                className="absolute bottom-0 left-0 w-full h-48 pointer-events-none"
+                                style={{
+                                    background: 'linear-gradient(to top, #232829 0%, transparent 100%)',
+                                }}
+                            ></div>
+                        </div>
                     </div>
                     <div className="lg:col-span-3 w-full">
                         {loading && <div className="text-center p-8 bg-[#282E33] rounded-xl">Загрузка тарифов...</div>}
@@ -132,7 +138,7 @@ export default function Page() {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-5 items-start mx-auto gap-8 mt-12 w-full">
-                    <div className="lg:col-span-5 w-full bg-[#232829] rounded-2xl shadow-lg border border-[#383E44]">
+                    <div className="lg:col-span-5 w-full bg-[#282E33] rounded-2xl shadow-lg border border-[#383E44]">
                         <div className="grid grid-cols-1 lg:grid-cols-5 items-start mx-auto gap-8 py-6 w-full">
                             <div className="lg:col-span-4 w-full px-4 sm:px-4">
                                 <div
