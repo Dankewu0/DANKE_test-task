@@ -138,7 +138,7 @@ export default function Page() {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-5 items-start mx-auto gap-8 mt-12 w-full">
-                    <div className="lg:col-span-5 w-full bg-[#282E33] rounded-2xl shadow-lg border border-[#383E44]">
+                    <div className="lg:col-span-5 w-full bg-[#232829] rounded-2xl shadow-lg border border-[#383E44]">
                         <div className="grid grid-cols-1 lg:grid-cols-5 items-start mx-auto gap-8 py-6 w-full">
                             <div className="lg:col-span-4 w-full px-4 sm:px-4">
                                 <div
