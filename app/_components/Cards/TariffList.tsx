@@ -36,7 +36,7 @@ function FeaturedTariffCard({
             onClick={() => onSelect(plan.id)}
             className={`relative cursor-pointer rounded-3xl px-8 py-8 bg-[#282E33] text-white transition-all duration-300 ${cardClasses} overflow-hidden`}
         >
-            <div className="flex justify-between absolute top-0 left-0 w-full z-10">
+            <div className="flex justify-between absolute top-0 left-0 w-full">
 
                 {displayedDiscount && (
                     <div className={`
