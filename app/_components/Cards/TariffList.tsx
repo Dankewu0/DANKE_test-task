@@ -25,43 +25,74 @@ function FeaturedTariffCard({
         : undefined);
 
     const displayedDiscount = isExpired ? undefined : discount;
-    const needsTopSpacing = displayedDiscount !== undefined || (plan.isBest && !isExpired);
-    const priceColor = selected ? "text-[#FDB056]" : "text-white";
+    const priceColor = "text-[#FDB056]";
+
+    const cardClasses = selected
+        ? "border-2 border-[#FDB056] transform scale-[1.01] shadow-[0_0_20px_rgba(253,176,86,0.5)]"
+        : "border-2 border-[#FDB056] hover:border-[#FDB056]/80";
 
     return (
         <div
             onClick={() => onSelect(plan.id)}
-            className={`relative cursor-pointer rounded-3xl px-6 py-6 bg-[#282E33] text-white shadow-xl transition-all duration-300
-                ${selected ? "border-2 border-[#FDB056] transform scale-[1.01]" : "border border-[#383E44] hover:border-[#FDB056]/50"}`}
+            className={`relative cursor-pointer rounded-3xl px-8 py-8 bg-[#282E33] text-white transition-all duration-300 ${cardClasses} overflow-hidden`}
         >
-            {plan.isBest && !isExpired && (
-                <div className="absolute top-0 right-0 text-[#FDB056] text-xs font-bold px-2 py-0.5 rounded-b-sm mr-4 mt-4">
-                    ХИТ!
-                </div>
-            )}
-            {displayedDiscount && (
-                <div className={`absolute top-0 left-0 bg-[#D43F4F] text-white text-xs font-semibold px-2 py-0.5 rounded-b-sm ml-4 lg:ml-12`}>
-                    -{displayedDiscount}%
-                </div>
-            )}
+            <div className="flex justify-between absolute top-0 left-0 w-full z-10">
 
-            <div className="flex flex-col w-full"
-                 style={{ paddingTop: needsTopSpacing ? '2rem' : '0.5rem' }}
-            >
-                <div className="flex flex-col lg:flex-row items-center justify-center w-full text-center lg:text-left">
-                    <div className="flex flex-col items-center lg:items-start w-full lg:w-auto mt-2 lg:mt-0">
-                        <h3 className="font-bold text-2xl mb-2">{plan.title}</h3>
-                        <div className="flex flex-col items-center lg:items-start">
-                            <span className={`text-5xl font-bold ${priceColor}`}>{displayPrice} ₽</span>
+                {displayedDiscount && (
+                    <div className={`
+                        hidden lg:block bg-[#D43F4F] text-white text-xs font-semibold 
+                        px-4 py-0.5 rounded-b-sm ml-8
+                    `}>
+                        -{displayedDiscount}%
+                    </div>
+                )}
+
+                <div className="flex justify-end w-full space-x-2 pr-8 pt-0">
+
+                    {displayedDiscount && (
+                        <div className={`
+                            block lg:hidden bg-[#D43F4F] text-white text-xs font-semibold 
+                            px-2 py-0.5 rounded-b-sm
+                        `}>
+                            -{displayedDiscount}%
+                        </div>
+                    )}
+                    {plan.isBest && !isExpired && (
+                        <div className="text-[#FDB056] text-xs font-bold px-2 py-0.5 rounded-sm">
+                            ХИТ!
+                        </div>
+                    )}
+                </div>
+            </div>
+
+
+            <div className="flex flex-col w-full pt-0">
+                <div className="flex items-start justify-start w-full">
+
+                    <div className="flex flex-col items-start pr-4">
+                        <h3 className="font-bold text-2xl mb-0 lg:mb-0 lg:mt-[-5px] whitespace-nowrap">{plan.title}</h3>
+                        <div className="flex flex-col items-start">
+                            <div className="flex items-start relative">
+                                <span className={`text-4xl lg:text-5xl font-bold ${priceColor} whitespace-nowrap`}>{displayPrice}</span>
+                                <div className="flex flex-col items-start ml-1 mt-[5px]">
+                                    <span className={`text-3xl lg:text-4xl font-bold ${priceColor}`}>₽</span>
+                                </div>
+                            </div>
                             {displayOldPrice && (
-                                <span className="line-through text-gray-500 text-lg mt-[-5px] ml-[2px]">{displayOldPrice} ₽</span>
+                                <div className="flex items-start mt-2">
+                                    <span
+                                        className="line-through text-[#919191] text-xs whitespace-nowrap"
+                                    >
+                                        {displayOldPrice} ₽
+                                    </span>
+                                </div>
                             )}
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-center lg:items-start pt-4 lg:pt-0 lg:pl-16 w-full lg:w-auto">
+                    <div className="flex flex-col items-end pt-0 flex-grow text-right lg:pl-4">
                         {plan.description && (
-                            <p className="text-base text-gray-300 text-center lg:text-left">
+                            <p className="text-sm lg:text-base text-gray-300">
                                 {plan.description}
                             </p>
                         )}
