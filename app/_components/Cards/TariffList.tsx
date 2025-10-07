@@ -40,7 +40,7 @@ function FeaturedTariffCard({
                 </div>
             )}
             {displayedDiscount && (
-                <div className={`absolute top-0 left-0 bg-[#D43F4F] text-white text-xs font-semibold px-2 py-0.5 rounded-b-sm ml-12 `}>
+                <div className={`absolute top-0 left-0 bg-[#D43F4F] text-white text-xs font-semibold px-2 py-0.5 rounded-b-sm ml-4 lg:ml-12`}>
                     -{displayedDiscount}%
                 </div>
             )}
@@ -48,19 +48,20 @@ function FeaturedTariffCard({
             <div className="flex flex-col w-full"
                  style={{ paddingTop: needsTopSpacing ? '2rem' : '0.5rem' }}
             >
-                <div className="flex items-center justify-center w-full">
-                    <div className="flex flex-col items-start ml-36">
+                <div className="flex flex-col lg:flex-row items-center justify-center w-full text-center lg:text-left">
+                    <div className="flex flex-col items-center lg:items-start w-full lg:w-auto mt-2 lg:mt-0">
                         <h3 className="font-bold text-2xl mb-2">{plan.title}</h3>
-                        <div className="flex flex-col items-start">
+                        <div className="flex flex-col items-center lg:items-start">
                             <span className={`text-5xl font-bold ${priceColor}`}>{displayPrice} ₽</span>
                             {displayOldPrice && (
                                 <span className="line-through text-gray-500 text-lg mt-[-5px] ml-[2px]">{displayOldPrice} ₽</span>
                             )}
                         </div>
                     </div>
-                    <div className="flex flex-col items-start pl-4">
+
+                    <div className="flex flex-col items-center lg:items-start pt-4 lg:pt-0 lg:pl-16 w-full lg:w-auto">
                         {plan.description && (
-                            <p className="text-base text-gray-300 text-left">
+                            <p className="text-base text-gray-300 text-center lg:text-left">
                                 {plan.description}
                             </p>
                         )}
@@ -190,7 +191,6 @@ export default function TariffList({ initialPlans, isExpired, isTimerLow }: Tari
                     </div>
                 )}
 
-                {/* ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлен grid-cols-1 для мобильных устройств */}
                 <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
                     {standardPlans.map((plan) => (
                         <TariffCard
